@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>E.T.E.R.N.I.T.Y Treasury & Band Kas System</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        fubiz: {
+                            bg: '#09090b',
+                            card: '#121215',
+                            border: '#27272a',
+                            hover: '#18181b',
+                            accent: '#e4e4e7',
+                            muted: '#71717a'
+                        }
+                    },
+                    screens: {
+                        'xs': '375px'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js for Financial Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .shiny-text {
+            background: linear-gradient(
+                120deg,
+                #71717a 0%,
+                #a1a1aa 20%,
+                #ffffff 50%,
+                #a1a1aa 80%,
+                #71717a 100%
+            );
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+    </style>
+</head>
+<body class="bg-fubiz-bg text-zinc-100 flex flex-col min-h-screen">
+
+    <!-- Header Component -->
+    <header class="sticky top-0 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-zinc-800/80 px-3 sm:px-6 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            
+            <!-- Mobile Optimized Shiny Title -->
+            <div class="text-center sm:text-left w-full sm:w-auto overflow-hidden">
+                <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                    <h1 class="shiny-text text-[1.15rem] xs:text-xl sm:text-2xl md:text-3xl font-black tracking-wider uppercase leading-tight select-none">
+                        E.T.E.R.N.I.T.Y
+                    </h1>
+                    <span class="text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">
+                        TREASURY
+                    </span>
+                </div>
+                <p class="text-[10px] sm:text-xs text-zinc-500 font-medium tracking-wide mt-0.5">
+                    Official Band Financial Management System
+                </p>
+            </div>
+
+            <!-- Header Action Controls & Admin Status -->
+            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2 text-xs">
+                
+                <!-- Live Cloud Sync Indicator -->
+                <div id="syncBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-400 font-medium text-[11px]" title="Realtime Firestore Sync Active">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span id="syncText" class="hidden xs:inline">Live Cloud</span>
+                </div>
+
+                <!-- Admin Action Button -->
+                <button id="adminBtn" onclick="openAdminModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition font-medium text-xs shadow-sm">
+                    <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                    <span id="adminBtnText">Login Admin</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 space-y-6">
+
+        <!-- Top Overview Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            
+            <!-- Total Saldo -->
+            <div class="bg-fubiz-card border border-zinc-800 rounded-xl p-3.5 sm:p-5 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-zinc-700 transition">
+                <div class="flex justify-between items-start text-zinc-400">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Total Kas Band</span>
+                    <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i>
+                </div>
+                <div class="mt-3">
+                    <h3 id="statTotalKas" class="text-lg sm:text-2xl font-bold text-white tracking-tight">Rp 0</h3>
+                    <p class="text-[11px] text-zinc-500 mt-0.5">Saldo bersih kas saat ini</p>
+                </div>
+            </div>
+
+            <!-- Total Pemasukan -->
+            <div class="bg-fubiz-card border border-zinc-800 rounded-xl p-3.5 sm:p-5 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-zinc-700 transition">
+                <div class="flex justify-between items-start text-zinc-400">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Total Pemasukan</span>
+                    <i data-lucide="arrow-down-left" class="w-4 h-4 text-emerald-400"></i>
+                </div>
+                <div class="mt-3">
+                    <h3 id="statTotalPemasukan" class="text-lg sm:text-2xl font-bold text-emerald-400 tracking-tight">Rp 0</h3>
+                    <p class="text-[11px] text-zinc-500 mt-0.5">Akumulasi iuran & gig</p>
+                </div>
+            </div>
+
+            <!-- Total Pengeluaran -->
+            <div class="bg-fubiz-card border border-zinc-800 rounded-xl p-3.5 sm:p-5 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-zinc-700 transition">
+                <div class="flex justify-between items-start text-zinc-400">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Total Pengeluaran</span>
+                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-rose-400"></i>
+                </div>
+                <div class="mt-3">
+                    <h3 id="statTotalPengeluaran" class="text-lg sm:text-2xl font-bold text-rose-400 tracking-tight">Rp 0</h3>
+                    <p class="text-[11px] text-zinc-500 mt-0.5">Biaya sewa, studio, alat</p>
+                </div>
+            </div>
+
+            <!-- Target Minggu Ini -->
+            <div class="bg-fubiz-card border border-zinc-800 rounded-xl p-3.5 sm:p-5 flex flex-col justify-between shadow-sm relative overflow-hidden group hover:border-zinc-700 transition">
+                <div class="flex justify-between items-start text-zinc-400">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Iuran Terkumpul</span>
+                    <i data-lucide="users" class="w-4 h-4 text-amber-400"></i>
+                </div>
+                <div class="mt-3">
+                    <h3 id="statWeeklyTarget" class="text-lg sm:text-2xl font-bold text-amber-400 tracking-tight">0%</h3>
+                    <p id="statWeeklySubtext" class="text-[11px] text-zinc-500 mt-0.5">Target: Rp 100.000 / minggu</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kas Anggota Section (5 Members Realtime Sync) -->
+        <div class="bg-fubiz-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-md">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4 pb-3 border-b border-zinc-800">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+                        <h2 class="text-base sm:text-lg font-bold text-white tracking-wide">Status Iuran Anggota Minggu Ini</h2>
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-0.5">Target Rp 20.000 / orang per minggu (Total Rp 100.000). Semua perubahan disinkronkan secara realtime.</p>
+                </div>
+                <div id="adminEditNote" class="text-xs text-amber-400 bg-amber-950/40 border border-amber-800/50 px-2.5 py-1 rounded-lg hidden">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 inline mr-1"></i> Mode Edit Admin Aktif
+                </div>
+            </div>
+
+            <!-- 5 Members Grid -->
+            <div id="membersGrid" class="grid grid-cols-1 md:grid-cols-5 gap-3.5">
+                <!-- Dynamic Member Cards injected via JS -->
+            </div>
+        </div>
+
+        <!-- Gig Honorarium Split Calculator -->
+        <div class="bg-fubiz-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-md">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-5 h-5 text-indigo-400"></i>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-white tracking-wide">Kalkulator Pembagian Honor Gig</h2>
+                        <p class="text-xs text-zinc-400">Hitung alokasi potongan Kas Band dan sisa pembagian bersih per personil.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Total Honor Gig (Rp)</label>
+                        <input type="number" id="gigTotal" placeholder="misal: 1500000" oninput="calculateGigSplit()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Potongan Kas (%)</label>
+                            <input type="number" id="gigKasPercent" value="20" oninput="calculateGigSplit()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">Biaya Ops/Alat (Rp)</label>
+                            <input type="number" id="gigOpsCost" value="0" oninput="calculateGigSplit()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Calculation Results -->
+                <div class="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 flex flex-col justify-between space-y-2">
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Masuk Kas Band:</span>
+                            <span id="gigKasResult" class="font-bold text-emerald-400">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Total Ops/Alat:</span>
+                            <span id="gigOpsResult" class="font-bold text-rose-400">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Sisa Net untuk Anggota:</span>
+                            <span id="gigNetResult" class="font-bold text-white">Rp 0</span>
+                        </div>
+                        <hr class="border-zinc-800 my-1">
+                        <div class="flex justify-between text-sm font-bold text-indigo-400">
+                            <span>Bersih / Orang (5 Personil):</span>
+                            <span id="gigPerPersonResult">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <button id="btnDepositGigKas" onclick="depositGigKas()" class="w-full mt-2 py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Setor Hasil Kas ke Treasury</span>
+                    </button>
+                </div>
+
+                <!-- Info Note -->
+                <div class="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-4 text-xs text-zinc-400 flex flex-col justify-center space-y-2">
+                    <p class="font-medium text-zinc-300"><i data-lucide="info" class="w-4 h-4 inline mr-1 text-zinc-400"></i> Catatan Transparansi Gig:</p>
+                    <p>Potongan Kas Band disarankan minimal 15-20% untuk pemeliharaan alat, tabungan rekaman, dan produksi merchandise mendatang.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart & Add Transaction Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Financial Chart Card -->
+            <div class="lg:col-span-2 bg-fubiz-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-md flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-white tracking-wide">Grafik Arus Kas (Cashflow)</h2>
+                        <p class="text-xs text-zinc-400">Visualisasi Pemasukan vs Pengeluaran</p>
+                    </div>
+                </div>
+                <div class="relative flex-1 min-h-[220px] w-full">
+                    <canvas id="cashflowChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Add Transaction Form (Admin Restricted Controls) -->
+            <div class="bg-fubiz-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-md flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-3 pb-2 border-b border-zinc-800">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
+                        <h2 class="text-base sm:text-lg font-bold text-white tracking-wide">Tambah Transaksi</h2>
+                    </div>
+
+                    <!-- Admin Access Lock Banner for Non-Admins -->
+                    <div id="txAdminLock" class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-4 text-center my-4 space-y-2">
+                        <i data-lucide="lock" class="w-8 h-8 text-zinc-500 mx-auto"></i>
+                        <p class="text-xs text-zinc-400">Hanya Admin terautentikasi yang dapat memasukkan transaksi baru.</p>
+                        <button onclick="openAdminModal()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold border border-zinc-700 transition">
+                            Login Admin (PIN: 1234)
+                        </button>
+                    </div>
+
+                    <form id="txForm" onsubmit="handleFormSubmit(event)" class="space-y-3 hidden">
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Tipe Transaksi</label>
+                            <select id="txType" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+                                <option value="IN">Pemasukan (+)</option>
+                                <option value="OUT">Pengeluaran (-)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Kategori</label>
+                            <select id="txCategory" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+                                <option value="Iuran Anggota">Iuran Anggota</option>
+                                <option value="Honorarium Gig">Honorarium Gig</option>
+                                <option value="Merchandise">Merchandise</option>
+                                <option value="Sewa Studio / Alat">Sewa Studio / Alat</option>
+                                <option value="Transport & Konsumsi">Transport & Konsumsi</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Keterangan / Deskripsi</label>
+                            <input type="text" id="txTitle" required placeholder="misal: Iuran Minggu 1 / Sewa Studio" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Jumlah (Rp)</label>
+                            <input type="number" id="txAmount" required placeholder="0" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-zinc-100 hover:bg-white text-zinc-950 font-bold rounded-lg text-xs transition shadow-sm mt-2">
+                            Simpan Transaksi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ledger / Transaction History Table -->
+        <div class="bg-fubiz-card border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-md">
+            <div class="flex flex-col md:flex-row justify-between md:items-center gap-3 mb-4 pb-3 border-b border-zinc-800">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-white tracking-wide">Buku Kas (Ledger Transaksi)</h2>
+                    <p class="text-xs text-zinc-400">Riwayat pengeluaran dan pemasukan keuangan band</p>
+                </div>
+                
+                <!-- Filters & Export -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="searchInput" oninput="renderLedger()" placeholder="Cari transaksi..." class="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white w-full sm:w-40">
+                    <select id="filterCategory" onchange="renderLedger()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white">
+                        <option value="ALL">Semua Kategori</option>
+                        <option value="Iuran Anggota">Iuran Anggota</option>
+                        <option value="Honorarium Gig">Honorarium Gig</option>
+                        <option value="Merchandise">Merchandise</option>
+                        <option value="Sewa Studio / Alat">Sewa Studio / Alat</option>
+                        <option value="Transport & Konsumsi">Transport & Konsumsi</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                    <button onclick="exportCSV()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-semibold border border-zinc-700 transition flex items-center gap-1.5">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>Export CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ledger Responsive Container -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider">
+                            <th class="py-3 px-3">Tanggal</th>
+                            <th class="py-3 px-3">Keterangan</th>
+                            <th class="py-3 px-3">Kategori</th>
+                            <th class="py-3 px-3 text-right">Jumlah (Rp)</th>
+                            <th id="thActions" class="py-3 px-3 text-center hidden">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerTbody" class="divide-y divide-zinc-800/60 text-xs">
+                        <!-- Dynamic Rows Injected -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="text-center py-8 text-zinc-500 text-xs hidden">
+                Belum ada transaksi tercatat.
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-zinc-800/80 py-4 text-center text-xs text-zinc-500">
+        <p>© 2026 E.T.E.R.N.I.T.Y Band. Built with precision and transparency.</p>
+    </footer>
+
+    <!-- Admin PIN Login Modal (FIXED LOGIC BUG) -->
+    <div id="adminModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-sm w-full shadow-xl space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="key" class="w-5 h-5 text-amber-400"></i>
+                    <h3 class="text-base font-bold text-white">Login Admin Treasury</h3>
+                </div>
+                <!-- Close Button triggers closeAdminModal ONLY without logging out -->
+                <button onclick="closeAdminModal()" class="text-zinc-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-zinc-400">
+                Masukkan PIN Admin untuk mengubah iuran anggota, nama personil, atau mencatat transaksi kas.
+            </p>
+
+            <form onsubmit="handleAdminAuth(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-400 mb-1">PIN Admin </label>
+                    <input type="password" id="adminPinInput" maxlength="6" required autofocus placeholder="****" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-center text-lg font-bold tracking-widest text-white focus:outline-none focus:border-amber-400">
+                    <p id="pinError" class="text-rose-400 text-[11px] mt-1 hidden">PIN Salah! Silakan coba lagi.</p>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeAdminModal()" class="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-lg text-xs transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-lg text-xs transition shadow-sm">
+                        Masuk Admin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Member Amount & Name Modal (Admin Only) -->
+    <div id="editMemberModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-sm w-full shadow-xl space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                <h3 id="editMemberTitle" class="text-base font-bold text-white">Update Member</h3>
+                <button onclick="closeEditMemberModal()" class="text-zinc-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveMember(event)" class="space-y-3">
+                <input type="hidden" id="editMemberId">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-400 mb-1">Nama Anggota / Personil</label>
+                    <input type="text" id="editMemberName" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-400 mb-1">Jumlah Terbayar (Rp)</label>
+                    <input type="number" id="editMemberPaid" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+                    <p class="text-[10px] text-zinc-500 mt-1">Target mingguan standar: Rp 20.000</p>
+                </div>
+
+                <!-- Quick Buttons -->
+                <div class="flex gap-1.5 pt-1">
+                    <button type="button" onclick="setEditPaidQuick(20000)" class="flex-1 py-1 bg-emerald-950 border border-emerald-700 text-emerald-300 text-[11px] font-semibold rounded">Lunas (20k)</button>
+                    <button type="button" onclick="setEditPaidQuick(10000)" class="flex-1 py-1 bg-amber-950 border border-amber-700 text-amber-300 text-[11px] font-semibold rounded">Half (10k)</button>
+                    <button type="button" onclick="setEditPaidQuick(0)" class="flex-1 py-1 bg-rose-950 border border-rose-700 text-rose-300 text-[11px] font-semibold rounded">Reset (0)</button>
+                </div>
+
+                <div class="flex gap-2 pt-3">
+                    <button type="button" onclick="closeEditMemberModal()" class="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-lg text-xs transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition shadow-sm">
+                        Simpan Live Sync
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 z-50 bg-zinc-800 border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 text-xs">
+        <i id="toastIcon" data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+        <span id="toastMsg">Notifikasi</span>
+    </div>
+
+    <!-- Firebase Standard Script Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // APP CONFIG & CONSTANTS
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'eternity-treasury-app';
+        
+        // Fallback Firebase Config if environment variable isn't injected
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyDummyKeyForFallbackStateOnly12345",
+                authDomain: "eternity-treasury.firebaseapp.com",
+                projectId: "eternity-treasury",
+                storageBucket: "eternity-treasury.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:abcdef123456"
+            };
+
+        let app, db, auth;
+        let isFirebaseActive = false;
+
+        // Default Data State (5 Band Members)
+        const DEFAULT_MEMBERS = [
+            { id: 1, name: "Vocalist", paid: 20000, target: 20000 },
+            { id: 2, name: "Guitarist 1", paid: 10000, target: 20000 },
+            { id: 3, name: "Guitarist 2", paid: 20000, target: 20000 },
+            { id: 4, name: "Bassist", paid: 0, target: 20000 },
+            { id: 5, name: "Drummer", paid: 20000, target: 20000 }
+        ];
+
+        const DEFAULT_TRANSACTIONS = [
+            { id: 'tx-1', date: '2026-09-10', title: 'Iuran Mingguan Kas Band', category: 'Iuran Anggota', type: 'IN', amount: 70000 },
+            { id: 'tx-2', date: '2026-09-12', title: 'DP Sewa Studio Latihan', category: 'Sewa Studio / Alat', type: 'OUT', amount: 35000 }
+        ];
+
+        // Global State Variables
+        window.treasuryData = {
+            members: JSON.parse(localStorage.getItem('eternity_members')) || DEFAULT_MEMBERS,
+            transactions: JSON.parse(localStorage.getItem('eternity_txs')) || DEFAULT_TRANSACTIONS
+        };
+
+        window.isAdmin = false;
+
+        // Initialize Firebase & Auth
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Auth process
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        isFirebaseActive = true;
+                        updateSyncBadge(true);
+                        subscribeToFirestore();
+                    } else {
+                        updateSyncBadge(false);
+                    }
+                });
+            } catch (err) {
+                console.warn("Firebase fallback to LocalStorage mode:", err);
+                isFirebaseActive = false;
+                updateSyncBadge(false);
+                renderAllUI();
+            }
+        }
+
+        // Live Firestore Document Snapshot Listener (Public Collection Path)
+        function subscribeToFirestore() {
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kas_data', 'main_doc');
+
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.members) window.treasuryData.members = data.members;
+                    if (data.transactions) window.treasuryData.transactions = data.transactions;
+                } else {
+                    // Seed initial document if first time
+                    saveDataToCloud();
+                }
+                saveToLocalStorage();
+                renderAllUI();
+            }, (error) => {
+                console.error("Firestore Snapshot Error:", error);
+                updateSyncBadge(false);
+                renderAllUI();
+            });
+        }
+
+        // Save Data helper (Syncs to Firestore & LocalStorage)
+        window.saveDataToCloud = async function() {
+            saveToLocalStorage();
+            if (isFirebaseActive && auth.currentUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'kas_data', 'main_doc');
+                    await setDoc(docRef, {
+                        members: window.treasuryData.members,
+                        transactions: window.treasuryData.transactions,
+                        updatedAt: new Date().toISOString()
+                    }, { merge: true });
+                } catch (e) {
+                    console.error("Error writing to Firestore:", e);
+                }
+            } else {
+                renderAllUI();
+            }
+        };
+
+        function saveToLocalStorage() {
+            localStorage.setItem('eternity_members', JSON.stringify(window.treasuryData.members));
+            localStorage.setItem('eternity_txs', JSON.stringify(window.treasuryData.transactions));
+        }
+
+        function updateSyncBadge(online) {
+            const badge = document.getElementById('syncBadge');
+            const text = document.getElementById('syncText');
+            if (online) {
+                badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-400 font-medium text-[11px]";
+                text.textContent = "Live Cloud";
+            } else {
+                badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 font-medium text-[11px]";
+                text.textContent = "Offline Mode";
+            }
+        }
+
+        // Initialize application on window load
+        window.addEventListener('DOMContentLoaded', () => {
+            initFirebase();
+            lucide.createIcons();
+            renderAllUI();
+        });
+    </script>
+
+    <script>
+        let chartInstance = null;
+
+        // Formatting Utilities
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        // ADMIN AUTHENTICATION LOGIC (FIXED LOGIC BUG)
+        function openAdminModal() {
+            if (window.isAdmin) {
+                // If already admin, clicking logs out safely
+                logoutAdmin();
+            } else {
+                document.getElementById('adminModal').classList.remove('hidden');
+                document.getElementById('adminPinInput').value = '';
+                document.getElementById('pinError').classList.add('hidden');
+                document.getElementById('adminPinInput').focus();
+            }
+        }
+
+        function closeAdminModal() {
+            // ONLY HIDES MODAL. Does NOT reset or trigger logout!
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function handleAdminAuth(e) {
+            e.preventDefault();
+            const pin = document.getElementById('adminPinInput').value;
+
+            if (pin === '1550') {
+                window.isAdmin = true;
+                closeAdminModal();
+                updateAdminUIState();
+                showToast("Berhasil login sebagai Admin Treasury!", "success");
+            } else {
+                document.getElementById('pinError').classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            window.isAdmin = false;
+            updateAdminUIState();
+            showToast("Anda telah keluar dari mode Admin", "info");
+        }
+
+        function updateAdminUIState() {
+            const btn = document.getElementById('adminBtn');
+            const btnText = document.getElementById('adminBtnText');
+            const txForm = document.getElementById('txForm');
+            const txLock = document.getElementById('txAdminLock');
+            const editNote = document.getElementById('adminEditNote');
+            const thActions = document.getElementById('thActions');
+
+            if (window.isAdmin) {
+                btn.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold transition text-xs shadow-sm";
+                btnText.textContent = "Logout Admin";
+                txForm.classList.remove('hidden');
+                txLock.classList.add('hidden');
+                editNote.classList.remove('hidden');
+                if (thActions) thActions.classList.remove('hidden');
+            } else {
+                btn.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition font-medium text-xs shadow-sm";
+                btnText.textContent = "Login Admin";
+                txForm.classList.add('hidden');
+                txLock.classList.remove('hidden');
+                editNote.classList.add('hidden');
+                if (thActions) thActions.classList.add('hidden');
+            }
+
+            renderAllUI();
+        }
+
+        // RENDER ALL UI COMPONENTS
+        function renderAllUI() {
+            renderOverviewStats();
+            renderMembers();
+            renderLedger();
+            renderChart();
+            calculateGigSplit();
+            lucide.createIcons();
+        }
+
+        // 1. STATS OVERVIEW RENDER
+        function renderOverviewStats() {
+            const txs = window.treasuryData.transactions || [];
+            const members = window.treasuryData.members || [];
+
+            let totalIn = 0;
+            let totalOut = 0;
+
+            txs.forEach(t => {
+                if (t.type === 'IN') totalIn += Number(t.amount);
+                else if (t.type === 'OUT') totalOut += Number(t.amount);
+            });
+
+            const totalKas = totalIn - totalOut;
+
+            let totalMemberCollected = members.reduce((sum, m) => sum + Number(m.paid), 0);
+            let targetWeekly = members.length * 20000;
+            let percentWeekly = targetWeekly > 0 ? Math.round((totalMemberCollected / targetWeekly) * 100) : 0;
+
+            document.getElementById('statTotalKas').textContent = formatRupiah(totalKas);
+            document.getElementById('statTotalPemasukan').textContent = formatRupiah(totalIn);
+            document.getElementById('statTotalPengeluaran').textContent = formatRupiah(totalOut);
+            document.getElementById('statWeeklyTarget').textContent = `${percentWeekly}% (${formatRupiah(totalMemberCollected)})`;
+        }
+
+        // 2. MEMBERS KAS RENDER (5 Band Members Support)
+        function renderMembers() {
+            const grid = document.getElementById('membersGrid');
+            grid.innerHTML = '';
+
+            const members = window.treasuryData.members || [];
+
+            members.forEach(m => {
+                const paid = Number(m.paid);
+                const target = Number(m.target || 20000);
+                const remaining = Math.max(0, target - paid);
+                
+                let statusBadge = '';
+                let borderClass = 'border-zinc-800';
+                
+                if (paid >= target) {
+                    statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">LUNAS</span>`;
+                    borderClass = 'border-emerald-900/40 bg-emerald-950/10';
+                } else if (paid > 0) {
+                    statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800">PARSIAL</span>`;
+                    borderClass = 'border-amber-900/40 bg-amber-950/10';
+                } else {
+                    statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-800">BELUM BAYAR</span>`;
+                }
+
+                const progressPercent = Math.min(100, Math.round((paid / target) * 100));
+
+                const cardHtml = `
+                    <div class="bg-zinc-900/90 border ${borderClass} rounded-xl p-3.5 flex flex-col justify-between space-y-3 relative group transition">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-bold text-sm text-white group-hover:text-amber-400 transition truncate pr-2">${m.name}</h3>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-xs text-zinc-400">Terbayar: <span class="text-white font-semibold">${formatRupiah(paid)}</span></p>
+                            ${remaining > 0 ? `<p class="text-[11px] text-rose-400">Kurang: ${formatRupiah(remaining)}</p>` : `<p class="text-[11px] text-emerald-400">Target Mingguan Tercapai</p>`}
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div>
+                            <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-emerald-500 to-amber-400 h-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Action Button (Admin Only or Click to edit) -->
+                        <div class="pt-1">
+                            ${window.isAdmin ? `
+                                <button onclick="openEditMemberModal(${m.id})" class="w-full py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition">
+                                    <i data-lucide="edit-2" class="w-3 h-3"></i> Edit Nama / Iuran
+                                </button>
+                            ` : `
+                                <button onclick="showToast('Login Admin (PIN: 1234) untuk mengubah status iuran', 'info')" class="w-full py-1 bg-zinc-950 text-zinc-500 rounded text-[10px] cursor-not-allowed">
+                                    Khusus Admin
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        // EDIT MEMBER MODAL LOGIC
+        function openEditMemberModal(id) {
+            const member = window.treasuryData.members.find(m => m.id === id);
+            if (!member) return;
+
+            document.getElementById('editMemberId').value = member.id;
+            document.getElementById('editMemberName').value = member.name;
+            document.getElementById('editMemberPaid').value = member.paid;
+            document.getElementById('editMemberTitle').textContent = `Edit ${member.name}`;
+
+            document.getElementById('editMemberModal').classList.remove('hidden');
+        }
+
+        function closeEditMemberModal() {
+            document.getElementById('editMemberModal').classList.add('hidden');
+        }
+
+        function setEditPaidQuick(val) {
+            document.getElementById('editMemberPaid').value = val;
+        }
+
+        function handleSaveMember(e) {
+            e.preventDefault();
+            const id = Number(document.getElementById('editMemberId').value);
+            const name = document.getElementById('editMemberName').value.trim();
+            const paid = Number(document.getElementById('editMemberPaid').value);
+
+            const memberIndex = window.treasuryData.members.findIndex(m => m.id === id);
+            if (memberIndex !== -1) {
+                window.treasuryData.members[memberIndex].name = name;
+                window.treasuryData.members[memberIndex].paid = paid;
+                
+                // Save and sync with Firestore Realtime Database
+                window.saveDataToCloud();
+                closeEditMemberModal();
+                showToast(`Data ${name} berhasil diubah!`, 'success');
+            }
+        }
+
+        // 3. GIG HONORARIUM SPLIT CALCULATOR LOGIC
+        function calculateGigSplit() {
+            const total = Number(document.getElementById('gigTotal').value) || 0;
+            const percent = Number(document.getElementById('gigKasPercent').value) || 0;
+            const ops = Number(document.getElementById('gigOpsCost').value) || 0;
+
+            const kasAmount = Math.round(total * (percent / 100));
+            const remainingForMembers = Math.max(0, total - kasAmount - ops);
+            const perPerson = Math.round(remainingForMembers / 5);
+
+            document.getElementById('gigKasResult').textContent = formatRupiah(kasAmount);
+            document.getElementById('gigOpsResult').textContent = formatRupiah(ops);
+            document.getElementById('gigNetResult').textContent = formatRupiah(remainingForMembers);
+            document.getElementById('gigPerPersonResult').textContent = formatRupiah(perPerson);
+
+            const btn = document.getElementById('btnDepositGigKas');
+            if (kasAmount > 0 && window.isAdmin) {
+                btn.disabled = false;
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        function depositGigKas() {
+            if (!window.isAdmin) {
+                showToast("Login Admin terlebih dahulu!", "error");
+                return;
+            }
+
+            const total = Number(document.getElementById('gigTotal').value) || 0;
+            const percent = Number(document.getElementById('gigKasPercent').value) || 0;
+            const kasAmount = Math.round(total * (percent / 100));
+
+            if (kasAmount <= 0) return;
+
+            const newTx = {
+                id: 'tx-' + Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                title: `Potongan Kas Gig (Total Fee ${formatRupiah(total)})`,
+                category: 'Honorarium Gig',
+                type: 'IN',
+                amount: kasAmount
+            };
+
+            window.treasuryData.transactions.unshift(newTx);
+            window.saveDataToCloud();
+            showToast(`Berhasil menyetor ${formatRupiah(kasAmount)} ke Kas Band!`, 'success');
+        }
+
+        // 4. LEDGER TRANSACTION LOGIC
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            if (!window.isAdmin) {
+                showToast("Login Admin terlebih dahulu!", "error");
+                return;
+            }
+
+            const type = document.getElementById('txType').value;
+            const category = document.getElementById('txCategory').value;
+            const title = document.getElementById('txTitle').value.trim();
+            const amount = Number(document.getElementById('txAmount').value);
+
+            if (!title || amount <= 0) {
+                showToast("Isi data transaksi dengan benar", "error");
+                return;
+            }
+
+            const newTx = {
+                id: 'tx-' + Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                title: title,
+                category: category,
+                type: type,
+                amount: amount
+            };
+
+            window.treasuryData.transactions.unshift(newTx);
+            window.saveDataToCloud();
+
+            // Reset Form
+            document.getElementById('txTitle').value = '';
+            document.getElementById('txAmount').value = '';
+            showToast("Transaksi berhasil ditambahkan!", "success");
+        }
+
+        function deleteTx(id) {
+            if (!window.isAdmin) return;
+            window.treasuryData.transactions = window.treasuryData.transactions.filter(t => t.id !== id);
+            window.saveDataToCloud();
+            showToast("Transaksi berhasil dihapus", "info");
+        }
+
+        function renderLedger() {
+            const tbody = document.getElementById('ledgerTbody');
+            const emptyState = document.getElementById('emptyState');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('filterCategory').value;
+
+            tbody.innerHTML = '';
+
+            let list = window.treasuryData.transactions || [];
+
+            // Filtering
+            list = list.filter(t => {
+                const matchSearch = t.title.toLowerCase().includes(search) || t.category.toLowerCase().includes(search);
+                const matchCat = (cat === 'ALL' || t.category === cat);
+                return matchSearch && matchCat;
+            });
+
+            if (list.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            list.forEach(t => {
+                const isIN = t.type === 'IN';
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-zinc-800/40 transition";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 text-zinc-400 whitespace-nowrap">${t.date}</td>
+                    <td class="py-3 px-3 font-medium text-white">${t.title}</td>
+                    <td class="py-3 px-3 text-zinc-400">
+                        <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[10px] border border-zinc-700">${t.category}</span>
+                    </td>
+                    <td class="py-3 px-3 text-right font-bold whitespace-nowrap ${isIN ? 'text-emerald-400' : 'text-rose-400'}">
+                        ${isIN ? '+' : '-'} ${formatRupiah(t.amount)}
+                    </td>
+                    ${window.isAdmin ? `
+                        <td class="py-3 px-3 text-center">
+                            <button onclick="deleteTx('${t.id}')" class="text-zinc-500 hover:text-rose-400 p-1 transition" title="Hapus">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    ` : ''}
+                `;
+                tbody.appendChild(tr);
+            });
+
+            lucide.createIcons();
+        }
+
+        // 5. CHART.JS CASHFLOW RENDER
+        function renderChart() {
+            const ctx = document.getElementById('cashflowChart').getContext('2d');
+            const txs = window.treasuryData.transactions || [];
+
+            // Grouping by Date
+            const dateMap = {};
+            txs.slice().reverse().forEach(t => {
+                if (!dateMap[t.date]) {
+                    dateMap[t.date] = { in: 0, out: 0 };
+                }
+                if (t.type === 'IN') dateMap[t.date].in += Number(t.amount);
+                else dateMap[t.date].out += Number(t.amount);
+            });
+
+            const labels = Object.keys(dateMap);
+            const dataIn = labels.map(l => dateMap[l].in);
+            const dataOut = labels.map(l => dateMap[l].out);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Data'],
+                    datasets: [
+                        {
+                            label: 'Pemasukan (+)',
+                            data: dataIn.length > 0 ? dataIn : [0],
+                            backgroundColor: '#10b981',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Pengeluaran (-)',
+                            data: dataOut.length > 0 ? dataOut : [0],
+                            backgroundColor: '#f43f5e',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#a1a1aa', font: { family: 'Inter', size: 11 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#71717a', font: { size: 10 } },
+                            grid: { color: '#27272a' }
+                        },
+                        y: {
+                            ticks: { color: '#71717a', font: { size: 10 } },
+                            grid: { color: '#27272a' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // CSV EXPORT LOGIC
+        function exportCSV() {
+            const txs = window.treasuryData.transactions || [];
+            if (txs.length === 0) {
+                showToast("Tidak ada transaksi untuk diexport", "info");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,ID,Tanggal,Keterangan,Kategori,Tipe,Jumlah\n";
+            txs.forEach(t => {
+                csvContent += `"${t.id}","${t.date}","${t.title}","${t.category}","${t.type}",${t.amount}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `ETERNITY_Treasury_Ledger_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // TOAST NOTIFICATION UTILITY
+        function showToast(msg, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.textContent = msg;
+
+            if (type === "success") {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.className = "w-4 h-4 text-emerald-400";
+            } else if (type === "error") {
+                toastIcon.setAttribute('data-lucide', 'alert-circle');
+                toastIcon.className = "w-4 h-4 text-rose-400";
+            } else {
+                toastIcon.setAttribute('data-lucide', 'info');
+                toastIcon.className = "w-4 h-4 text-amber-400";
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
