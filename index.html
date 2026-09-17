@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>E.T.E.R.N.I.T.Y — Editorial Treasury & Finance</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts: Syne & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            fubiz: {
+              black: '#09090b',
+              surface: '#121215',
+              border: '#27272a',
+              card: '#18181b',
+              accent: '#3f3f46',
+              textMuted: '#a1a1aa'
+            }
+          },
+          fontFamily: {
+            syne: ['Syne', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ShinyText Continuous Metallic Animation for Logo */
+    .shiny-text-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      background: linear-gradient(120deg, #999999 0%, #b5b5b5 25%, #ffffff 50%, #b5b5b5 75%, #999999 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shinySweep 2.8s linear infinite;
+      display: inline-block;
+    }
+
+    .shiny-text-logo:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes shinySweep {
+      0% { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
+
+    .fluid-kpi-text {
+      font-size: clamp(1.1rem, 2.2vw, 1.75rem);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-white selection:text-black">
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-md border-b border-fubiz-border">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
+      
+      <!-- Brand Logo with ShinyText Animation - Optimized Mobile Visibility -->
+      <div class="flex items-center gap-2 min-w-0 shrink">
+        <a href="#" class="shiny-text-logo text-base min-[380px]:text-lg sm:text-2xl md:text-3xl tracking-normal min-[380px]:tracking-wider sm:tracking-widest uppercase whitespace-nowrap overflow-visible">
+          E.T.E.R.N.I.T.Y
+        </a>
+        <span class="hidden md:inline-block text-[10px] uppercase tracking-widest text-fubiz-textMuted border border-fubiz-border px-2 py-0.5 rounded shrink-0">
+          Treasury
+        </span>
+      </div>
+
+      <!-- Right Controls: Sync Status & Admin Authentication -->
+      <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+        <!-- Database Connection Badge (Clickable for Setup) -->
+        <button id="dbSyncBadge" onclick="openDbSetupModal()" class="hidden min-[480px]:flex items-center gap-1.5 text-[10px] sm:text-xs px-2.5 py-1 rounded-full border border-fubiz-border bg-fubiz-surface hover:border-zinc-500 transition-all cursor-pointer" title="Klik untuk Pengaturan Database Cloud">
+          <span class="w-2 h-2 rounded-full bg-zinc-500" id="dbSyncDot"></span>
+          <span id="dbSyncText" class="text-fubiz-textMuted font-mono">Syncing...</span>
+          <i class="fa-solid fa-gear text-[9px] text-fubiz-textMuted ml-0.5"></i>
+        </button>
+
+        <!-- Role Indicator Badge -->
+        <div id="roleBadge" class="hidden sm:flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border border-fubiz-border bg-fubiz-surface">
+          <span class="w-2 h-2 rounded-full bg-zinc-500" id="roleDot"></span>
+          <span id="roleText" class="text-fubiz-textMuted font-medium">Mode: Viewer</span>
+        </div>
+
+        <!-- Admin Action Button -->
+        <button id="adminAuthBtn" onclick="handleAuthBtnClick()" class="text-[10px] sm:text-xs uppercase tracking-wider font-bold px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg border border-white text-white hover:bg-white hover:text-black transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-lock text-[10px] sm:text-[11px]" id="authBtnIcon"></i>
+          <span id="authBtnLabel">Admin</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 w-full flex-grow space-y-8 sm:space-y-10">
+
+    <!-- OVERVIEW METRICS GRID -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+      <!-- Total Balance -->
+      <div class="bg-fubiz-surface border border-fubiz-border p-4 sm:p-5 rounded-xl flex flex-col justify-between space-y-2 sm:space-y-3">
+        <div class="flex items-center justify-between text-fubiz-textMuted text-[11px] sm:text-xs font-semibold uppercase tracking-wider">
+          <span>Total Kas Band</span>
+          <i class="fa-solid fa-vault text-zinc-400"></i>
+        </div>
+        <div class="fluid-kpi-text font-syne font-bold text-white truncate" id="kpiBalance">Rp 0</div>
+        <p class="text-[10px] sm:text-[11px] text-fubiz-textMuted">Saldo bersih siap pakai</p>
+      </div>
+
+      <!-- Total Income -->
+      <div class="bg-fubiz-surface border border-fubiz-border p-4 sm:p-5 rounded-xl flex flex-col justify-between space-y-2 sm:space-y-3">
+        <div class="flex items-center justify-between text-fubiz-textMuted text-[11px] sm:text-xs font-semibold uppercase tracking-wider">
+          <span>Total Pemasukan</span>
+          <i class="fa-solid fa-arrow-down-left text-emerald-400"></i>
+        </div>
+        <div class="fluid-kpi-text font-syne font-bold text-emerald-400 truncate" id="kpiIncome">Rp 0</div>
+        <p class="text-[10px] sm:text-[11px] text-fubiz-textMuted">Akumulasi dana masuk</p>
+      </div>
+
+      <!-- Total Expense -->
+      <div class="bg-fubiz-surface border border-fubiz-border p-4 sm:p-5 rounded-xl flex flex-col justify-between space-y-2 sm:space-y-3">
+        <div class="flex items-center justify-between text-fubiz-textMuted text-[11px] sm:text-xs font-semibold uppercase tracking-wider">
+          <span>Total Pengeluaran</span>
+          <i class="fa-solid fa-arrow-up-right text-rose-400"></i>
+        </div>
+        <div class="fluid-kpi-text font-syne font-bold text-rose-400 truncate" id="kpiExpense">Rp 0</div>
+        <p class="text-[10px] sm:text-[11px] text-fubiz-textMuted">Akumulasi operasional/alat</p>
+      </div>
+
+      <!-- Weekly Contribution Progress -->
+      <div class="bg-fubiz-surface border border-fubiz-border p-4 sm:p-5 rounded-xl flex flex-col justify-between space-y-2 sm:space-y-3">
+        <div class="flex items-center justify-between text-fubiz-textMuted text-[11px] sm:text-xs font-semibold uppercase tracking-wider">
+          <span>Iuran Minggu Ini</span>
+          <i class="fa-solid fa-users text-sky-400"></i>
+        </div>
+        <div class="fluid-kpi-text font-syne font-bold text-sky-300 truncate" id="kpiWeeklyTotal">Rp 0 / 100.000</div>
+        <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+          <div id="kpiWeeklyProgressBar" class="bg-white h-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEMBER WEEKLY CONTRIBUTION TRACKER -->
+    <section class="bg-fubiz-surface border border-fubiz-border rounded-xl p-4 sm:p-6 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-fubiz-border pb-4">
+        <div>
+          <h2 class="font-syne text-lg sm:text-xl font-bold uppercase tracking-wider text-white">Sistem Iuran Anggota</h2>
+          <p class="text-xs text-fubiz-textMuted mt-0.5">Target: <span class="text-white font-semibold">Rp 20.000</span> / minggu per anggota (5 Anggota = Rp 100.000/minggu)</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="confirmResetWeeklyIuran()" class="text-xs px-3 py-2 rounded border border-fubiz-border hover:border-zinc-400 text-fubiz-textMuted hover:text-white transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left"></i> Reset Minggu Baru
+          </button>
+        </div>
+      </div>
+
+      <!-- Member List Grid (5 Members) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5" id="memberCardsGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- GIG HONORARIUM CALCULATOR SECTION -->
+    <section class="bg-fubiz-surface border border-fubiz-border rounded-xl p-4 sm:p-6 space-y-5">
+      <div class="border-b border-fubiz-border pb-3">
+        <h2 class="font-syne text-lg sm:text-xl font-bold uppercase tracking-wider text-white">Kalkulator Bagi Hasil Gig</h2>
+        <p class="text-xs text-fubiz-textMuted mt-0.5">Hitung alokasi fee penampilan untuk 5 personil dan potong alokasi Kas Band</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <!-- Input Form -->
+        <div class="lg:col-span-5 space-y-4">
+          <div>
+            <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Total Fee Gig (Gross)</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-xs text-zinc-500 font-bold">Rp</span>
+              <input type="number" id="calcGigFee" placeholder="cth: 2500000" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors" oninput="calculateGigSplit()">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Potongan Kas (%)</label>
+              <input type="number" id="calcKasPercent" value="20" min="0" max="100" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors" oninput="calculateGigSplit()">
+            </div>
+            <div>
+              <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Jumlah Member</label>
+              <input type="number" id="calcMemberCount" value="5" readonly class="w-full bg-zinc-900 border border-fubiz-border rounded-lg px-3 py-2 text-sm text-zinc-400 cursor-not-allowed">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Nama Gig / Event</label>
+            <input type="text" id="calcEventName" placeholder="cth: Festival Musik Indie" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors">
+          </div>
+
+          <button onclick="injectGigToKas()" class="w-full py-2.5 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            Inject Alokasi Kas Ke Laporan Transaksi
+          </button>
+        </div>
+
+        <!-- Result Breakdown Display -->
+        <div class="lg:col-span-7 bg-fubiz-black border border-fubiz-border rounded-lg p-4 sm:p-5 space-y-4">
+          <h3 class="text-xs uppercase font-bold text-fubiz-textMuted tracking-wider border-b border-fubiz-border pb-2">Rincian Pembagian Fee</h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-fubiz-card p-3.5 rounded border border-fubiz-border">
+              <span class="text-[10px] sm:text-[11px] text-fubiz-textMuted uppercase block">Alokasi Masuk Kas Band</span>
+              <span class="text-lg sm:text-xl font-syne font-bold text-emerald-400 block mt-1 truncate" id="calcKasAmount">Rp 0</span>
+            </div>
+            <div class="bg-fubiz-card p-3.5 rounded border border-fubiz-border">
+              <span class="text-[10px] sm:text-[11px] text-fubiz-textMuted uppercase block">Total Net Untuk Personil</span>
+              <span class="text-lg sm:text-xl font-syne font-bold text-white block mt-1 truncate" id="calcPersonnelTotal">Rp 0</span>
+            </div>
+          </div>
+
+          <div class="bg-fubiz-card p-3.5 rounded border border-fubiz-border space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-fubiz-textMuted">Honor Bersih Per Personil (5 Orang):</span>
+              <span class="font-bold text-white font-mono" id="calcPerMemberAmount">Rp 0 / org</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINANCIAL CHARTS & TRANSACTION FORM SECTION -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Add Transaction Form (Admin Protected) -->
+      <div class="lg:col-span-5 bg-fubiz-surface border border-fubiz-border rounded-xl p-4 sm:p-6 space-y-4">
+        <div class="border-b border-fubiz-border pb-3 flex items-center justify-between">
+          <h2 class="font-syne text-base sm:text-lg font-bold uppercase text-white">Input Transaksi Baru</h2>
+          <span class="text-[10px] uppercase tracking-wider text-fubiz-textMuted border border-fubiz-border px-2 py-0.5 rounded">Khusus Admin</span>
+        </div>
+
+        <form id="txForm" onsubmit="handleFormSubmit(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Tipe Transaksi</label>
+            <div class="grid grid-cols-2 gap-2.5">
+              <label class="cursor-pointer border border-fubiz-border rounded-lg p-2 flex items-center justify-center gap-2 text-xs font-semibold hover:border-zinc-500 transition-colors">
+                <input type="radio" name="txType" value="income" checked class="accent-white">
+                <span class="text-emerald-400">Pemasukan</span>
+              </label>
+              <label class="cursor-pointer border border-fubiz-border rounded-lg p-2 flex items-center justify-center gap-2 text-xs font-semibold hover:border-zinc-500 transition-colors">
+                <input type="radio" name="txType" value="expense" class="accent-white">
+                <span class="text-rose-400">Pengeluaran</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Nominal (Rp)</label>
+            <input type="number" id="txAmount" placeholder="0" required class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors">
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Kategori</label>
+            <select id="txCategory" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors">
+              <option value="Iuran Rutin">Iuran Rutin Anggota</option>
+              <option value="Fee Gig">Fee Gig / Penampilan</option>
+              <option value="Merchandise">Penjualan Merchandise</option>
+              <option value="Sewa Studio">Sewa Studio / Latihan</option>
+              <option value="Alat & Sound">Pembelian/Servis Alat</option>
+              <option value="Transport & Konsumsi">Transport & Konsumsi</option>
+              <option value="Lainnya">Lain-lain</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Keterangan / Deskripsi</label>
+            <input type="text" id="txDescription" placeholder="cth: Sewa studio latihan 2 jam" required class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors">
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Tanggal</label>
+            <input type="date" id="txDate" required class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white transition-colors">
+          </div>
+
+          <button type="submit" class="w-full py-2.5 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus"></i> Simpan Transaksi
+          </button>
+        </form>
+      </div>
+
+      <!-- Financial Chart View -->
+      <div class="lg:col-span-7 bg-fubiz-surface border border-fubiz-border rounded-xl p-4 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-fubiz-border pb-3">
+          <h2 class="font-syne text-base sm:text-lg font-bold uppercase text-white">Visualisasi Arus Kas</h2>
+          <span class="text-xs text-fubiz-textMuted">Monochrome View</span>
+        </div>
+        <div class="h-[280px] sm:h-[320px] w-full relative">
+          <canvas id="cashflowChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANSACTION LEDGER TABLE & MOBILE CARDS -->
+    <section class="bg-fubiz-surface border border-fubiz-border rounded-xl p-4 sm:p-6 space-y-5">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-fubiz-border pb-4">
+        <div>
+          <h2 class="font-syne text-lg sm:text-xl font-bold uppercase tracking-wider text-white">Laporan Transaksi Kas</h2>
+          <p class="text-xs text-fubiz-textMuted mt-0.5">Daftar riwayat uang masuk dan keluar secara real-time</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="exportToCSV()" class="text-xs px-3 py-2 rounded bg-fubiz-card border border-fubiz-border hover:border-white text-white transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-download"></i> Export CSV
+          </button>
+          <button onclick="confirmResetAllData()" class="text-xs px-3 py-2 rounded bg-fubiz-card border border-rose-900/50 hover:border-rose-500 text-rose-400 transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-trash"></i> Reset All Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="flex flex-col sm:flex-row items-center gap-3">
+        <div class="w-full sm:w-48">
+          <select id="filterCategory" onchange="renderTransactions()" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none">
+            <option value="ALL">Semua Kategori</option>
+            <option value="Iuran Rutin">Iuran Rutin</option>
+            <option value="Fee Gig">Fee Gig</option>
+            <option value="Merchandise">Merchandise</option>
+            <option value="Sewa Studio">Sewa Studio</option>
+            <option value="Alat & Sound">Alat & Sound</option>
+            <option value="Transport & Konsumsi">Transport & Konsumsi</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="w-full sm:w-64">
+          <input type="text" id="searchQuery" oninput="renderTransactions()" placeholder="Cari keterangan..." class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none">
+        </div>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="border-b border-fubiz-border text-fubiz-textMuted uppercase font-semibold">
+            <tr>
+              <th class="py-3 px-3">Tanggal</th>
+              <th class="py-3 px-3">Kategori</th>
+              <th class="py-3 px-3">Keterangan</th>
+              <th class="py-3 px-3 text-right">Nominal</th>
+              <th class="py-3 px-3 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="txTableBody" class="divide-y divide-fubiz-border">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards View -->
+      <div class="grid grid-cols-1 gap-2.5 md:hidden" id="txMobileCards">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden text-center py-10 space-y-2">
+        <div class="w-10 h-10 rounded-full bg-fubiz-card border border-fubiz-border flex items-center justify-center mx-auto text-fubiz-textMuted">
+          <i class="fa-solid fa-folder-open text-base"></i>
+        </div>
+        <p class="text-xs font-semibold text-white">Belum Ada Transaksi</p>
+        <p class="text-[11px] text-fubiz-textMuted max-w-xs mx-auto">Laporan transaksi kas masih kosong. Login sebagai admin untuk mulai mencatat.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-fubiz-border bg-[#09090b] py-6 mt-10">
+    <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+      <div class="shiny-text-logo text-lg font-bold tracking-widest">E.T.E.R.N.I.T.Y</div>
+      <p class="text-xs text-fubiz-textMuted">Official Band Finance & Treasury Portal</p>
+      <p class="text-[10px] text-zinc-600 font-mono">© 2026 E.T.E.R.N.I.T.Y Band. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="adminModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-fubiz-surface border border-fubiz-border rounded-xl p-5 sm:p-6 max-w-sm w-full space-y-4">
+      <div class="flex justify-between items-center border-b border-fubiz-border pb-3">
+        <h3 class="font-syne text-base sm:text-lg font-bold uppercase text-white">Verifikasi Admin</h3>
+        <button onclick="closeAdminModal()" class="text-fubiz-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-fubiz-textMuted">Masukkan PIN keamanan admin untuk mengaktifkan mode kontrol penuh.</p>
+      <div>
+        <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">PIN Admin</label>
+        <input type="password" id="adminPinInput" placeholder="Masukkan PIN" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-center text-lg tracking-widest text-white focus:outline-none focus:border-white" onkeydown="if(event.key==='Enter') verifyAdminPin()">
+      </div>
+      <div class="text-[11px] text-zinc-400 bg-fubiz-black p-2.5 rounded border border-fubiz-border text-center">
+        PIN Admin <span class="text-white font-bold font-mono"></span>
+      </div>
+      <button onclick="verifyAdminPin()" class="w-full py-2.5 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-zinc-200 transition-all">
+        Masuk Mode Admin
+      </button>
+    </div>
+  </div>
+
+  <!-- PAY MEMBER MODAL -->
+  <div id="payMemberModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-fubiz-surface border border-fubiz-border rounded-xl p-5 sm:p-6 max-w-sm w-full space-y-4">
+      <div class="flex justify-between items-center border-b border-fubiz-border pb-3">
+        <h3 class="font-syne text-sm sm:text-base font-bold uppercase text-white" id="payModalMemberName">Input Iuran</h3>
+        <button onclick="closePayMemberModal()" class="text-fubiz-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Nominal Pembayaran (Rp)</label>
+          <input type="number" id="payAmountInput" placeholder="cth: 10000" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+          <p class="text-[10px] text-fubiz-textMuted mt-1">Sistem akan otomatis menghitung saldo terbayar & sisa kekurangan.</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="setQuickPay(5000)" class="flex-1 py-1.5 bg-fubiz-card border border-fubiz-border rounded text-xs text-white hover:border-white">5rb</button>
+          <button onclick="setQuickPay(10000)" class="flex-1 py-1.5 bg-fubiz-card border border-fubiz-border rounded text-xs text-white hover:border-white">10rb</button>
+          <button onclick="setQuickPay(20000)" class="flex-1 py-1.5 bg-fubiz-card border border-fubiz-border rounded text-xs text-white hover:border-white">20rb</button>
+        </div>
+        <label class="flex items-center gap-2 text-xs text-fubiz-textMuted cursor-pointer pt-2">
+          <input type="checkbox" id="paySyncToKas" checked class="accent-white">
+          <span>Otomatis catat transaksi di Kas Band</span>
+        </label>
+      </div>
+      <button onclick="submitMemberPayment()" class="w-full py-2.5 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-zinc-200 transition-all">
+        Simpan Pembayaran
+      </button>
+    </div>
+  </div>
+
+  <!-- EDIT MEMBER NAME MODAL -->
+  <div id="editMemberModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-fubiz-surface border border-fubiz-border rounded-xl p-5 sm:p-6 max-w-sm w-full space-y-4">
+      <div class="flex justify-between items-center border-b border-fubiz-border pb-3">
+        <h3 class="font-syne text-sm sm:text-base font-bold uppercase text-white">Ubah Nama Anggota</h3>
+        <button onclick="closeEditMemberModal()" class="text-fubiz-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div>
+        <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Nama / Peran Anggota</label>
+        <input type="text" id="editMemberNameInput" placeholder="cth: Vokalis / Arlan" class="w-full bg-fubiz-black border border-fubiz-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white">
+      </div>
+      <button onclick="saveMemberName()" class="w-full py-2.5 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-zinc-200 transition-all">
+        Simpan Perubahan
+      </button>
+    </div>
+  </div>
+
+  <!-- DATABASE SETUP MODAL -->
+  <div id="dbSetupModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-fubiz-surface border border-fubiz-border rounded-xl p-5 sm:p-6 max-w-md w-full space-y-4">
+      <div class="flex justify-between items-center border-b border-fubiz-border pb-3">
+        <h3 class="font-syne text-base font-bold uppercase text-white flex items-center gap-2">
+          <i class="fa-solid fa-database text-emerald-400"></i> Pengaturan Cloud Database
+        </h3>
+        <button onclick="closeDbSetupModal()" class="text-fubiz-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="space-y-3 text-xs text-fubiz-textMuted">
+        <p class="text-white font-medium">Status Koneksi Saat Ini: <span id="modalDbStatus" class="font-bold font-mono text-amber-400">Local Storage</span></p>
+        
+        <p class="leading-relaxed">
+          Secara default, aplikasi menyimpan data secara lokal di browser. Untuk menyalakan **Cloud Realtime Database** (agar data otomatis tersinkronisasi antar HP/laptop personil secara gratis):
+        </p>
+
+        <div class="bg-fubiz-black p-3 rounded-lg border border-fubiz-border space-y-1.5 text-[11px]">
+          <span class="text-white font-bold block">Cara Membuat Database Firebase Gratis (2 Menit):</span>
+          <ol class="list-decimal pl-4 space-y-1 text-fubiz-textMuted">
+            <li>Buka <a href="https://console.firebase.google.com" target="_blank" class="text-sky-400 underline font-semibold">console.firebase.google.com</a> lalu login akun Google.</li>
+            <li>Klik <b>Add Project</b> / Buat Project Baru.</li>
+            <li>Di menu samping, pilih <b>Build &gt; Firestore Database</b> &gt; klik <i>Create Database</i> (pilih Test Mode).</li>
+            <li>Buka <b>Project Settings</b> (ikon roda gigi) &gt; Scroll ke bawah klik ikon Web <code>&lt;/&gt;</code>.</li>
+            <li>Salin objek JSON <code>const firebaseConfig = { ... };</code> dan tempel di bawah ini.</li>
+          </ol>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase text-fubiz-textMuted font-semibold mb-1">Firebase Config (JSON)</label>
+          <textarea id="dbConfigInput" rows="5" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "eternity-band.firebaseapp.com",\n  "projectId": "eternity-band",\n  "storageBucket": "eternity-band.appspot.com",\n  "messagingSenderId": "123456...",\n  "appId": "1:123456..."\n}' class="w-full bg-fubiz-black border border-fubiz-border rounded-lg p-2.5 text-xs font-mono text-emerald-400 focus:outline-none focus:border-white"></textarea>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="resetDbConfig()" class="py-2.5 px-3 bg-fubiz-card border border-fubiz-border text-rose-400 text-xs font-bold rounded-lg hover:border-rose-500 transition-all">
+          Gunakan Local
+        </button>
+        <button onclick="saveCustomFirebaseConfig()" class="flex-1 py-2.5 bg-white text-black font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-zinc-200 transition-all">
+          Hubungkan Database
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRMATION DIALOG MODAL (REPLACES BROWSER ALERT/CONFIRM) -->
+  <div id="confirmModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-fubiz-surface border border-fubiz-border rounded-xl p-5 sm:p-6 max-w-sm w-full space-y-4">
+      <div class="flex justify-between items-center border-b border-fubiz-border pb-2">
+        <h3 class="font-syne text-base font-bold uppercase text-white" id="confirmTitle">Konfirmasi</h3>
+        <button onclick="closeConfirmModal()" class="text-fubiz-textMuted hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-fubiz-textMuted leading-relaxed" id="confirmMessage">Apakah anda yakin ingin melanjutkan?</p>
+      <div class="flex gap-2.5 pt-2">
+        <button onclick="closeConfirmModal()" class="flex-1 py-2 bg-fubiz-card border border-fubiz-border text-white text-xs font-semibold rounded-lg hover:border-zinc-400">Batal</button>
+        <button id="confirmExecuteBtn" class="flex-1 py-2 bg-rose-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-rose-500">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- JAVASCRIPT APP LOGIC & FIREBASE INTEGRATION -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // CONSTANTS & STATE VARIABLES
+    const DEFAULT_PIN = "1551";
+    const TARGET_WEEKLY_PER_MEMBER = 20000;
+
+    let isAdmin = false;
+    let db = null;
+    let auth = null;
+    let isCloudSyncActive = false;
+    let pendingConfirmAction = null;
+
+    let transactions = [];
+    let memberData = [
+      { id: 1, name: "Anggota 1", paid: 0 },
+      { id: 2, name: "Anggota 2", paid: 0 },
+      { id: 3, name: "Anggota 3", paid: 0 },
+      { id: 4, name: "Anggota 4", paid: 0 },
+      { id: 5, name: "Anggota 5", paid: 0 },
+    ];
+
+    let selectedMemberId = null;
+    let chartInstance = null;
+
+    // INITIALIZATION & FIREBASE SETUP
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById('txDate').valueAsDate = new Date();
+      initChart();
+      calculateGigSplit();
+      updateRoleUI();
+      initFirebaseSync();
+    });
+
+    async function initFirebaseSync() {
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'eternity-treasury-app';
+      let firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+
+      const customConfig = localStorage.getItem('eternity_firebase_config');
+      if (!firebaseConfig && customConfig) {
+        try {
+          firebaseConfig = JSON.parse(customConfig);
+        } catch(e) {
+          console.error("Invalid custom firebase config format", e);
+        }
+      }
+
+      if (!firebaseConfig) {
+        updateDbBadge(false, "Local Storage");
+        loadFromLocalStorage();
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        let currentUser = null;
+
+        if (token) {
+          const res = await signInWithCustomToken(auth, token);
+          currentUser = res.user;
+        } else {
+          const res = await signInAnonymously(auth);
+          currentUser = res.user;
+        }
+
+        if (currentUser) {
+          isCloudSyncActive = true;
+          updateDbBadge(true, "Cloud Realtime");
+
+          // RULE 1 & RULE 2: Firestore Realtime Listener for Members
+          const membersDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'members');
+          onSnapshot(membersDocRef, (snapshot) => {
+            if (snapshot.exists() && snapshot.data().list) {
+              memberData = snapshot.data().list;
+              renderMembers();
+            } else {
+              saveMembersToCloud();
+            }
+          }, (err) => {
+            console.warn("Firestore members read error:", err);
+            loadFromLocalStorage();
+          });
+
+          // RULE 1 & RULE 2: Firestore Realtime Listener for Transactions
+          const txCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
+          onSnapshot(txCollRef, (snapshot) => {
+            const remoteTxs = [];
+            snapshot.forEach(docSnap => {
+              remoteTxs.push({ docId: docSnap.id, ...docSnap.data() });
+            });
+            remoteTxs.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            transactions = remoteTxs;
+            renderTransactions();
+          }, (err) => {
+            console.warn("Firestore transactions read error:", err);
+            loadFromLocalStorage();
+          });
+        } else {
+          updateDbBadge(false, "Local Storage");
+          loadFromLocalStorage();
+        }
+      } catch (e) {
+        console.warn("Firebase sync fallback to local mode:", e);
+        updateDbBadge(false, "Local Storage");
+        loadFromLocalStorage();
+      }
+    }
+
+    function loadFromLocalStorage() {
+      const storedTxs = localStorage.getItem('eternity_txs');
+      if (storedTxs) transactions = JSON.parse(storedTxs);
+
+      const storedMembers = localStorage.getItem('eternity_members');
+      if (storedMembers) memberData = JSON.parse(storedMembers);
+
+      renderMembers();
+      renderTransactions();
+    }
+
+    function syncDataState() {
+      localStorage.setItem('eternity_txs', JSON.stringify(transactions));
+      localStorage.setItem('eternity_members', JSON.stringify(memberData));
+
+      if (isCloudSyncActive && db) {
+        saveMembersToCloud();
+      }
+
+      renderMembers();
+      renderTransactions();
+    }
+
+    async function saveMembersToCloud() {
+      if (!isCloudSyncActive || !db) return;
+      try {
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'eternity-treasury-app';
+        const membersDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'members');
+        await setDoc(membersDocRef, { list: memberData, updatedAt: new Date().toISOString() });
+      } catch (e) {
+        console.warn("Error pushing members to cloud:", e);
+      }
+    }
+
+    function updateDbBadge(isOnline, label) {
+      const dot = document.getElementById('dbSyncDot');
+      const text = document.getElementById('dbSyncText');
+      if (isOnline) {
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        text.innerText = label;
+        text.className = "text-emerald-400 font-mono";
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-amber-500";
+        text.innerText = label;
+        text.className = "text-amber-400 font-mono";
+      }
+    }
+
+    /* ADMIN AUTHENTICATION FIXED FUNCTIONS */
+    function handleAuthBtnClick() {
+      if (isAdmin) {
+        logoutAdmin();
+      } else {
+        openAdminModal();
+      }
+    }
+
+    function openAdminModal() {
+      const modal = document.getElementById('adminModal');
+      modal.classList.remove('hidden');
+      document.getElementById('adminPinInput').value = '';
+      setTimeout(() => document.getElementById('adminPinInput').focus(), 100);
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.add('hidden');
+    }
+
+    function verifyAdminPin() {
+      const pinInput = document.getElementById('adminPinInput').value.trim();
+      if (pinInput === DEFAULT_PIN) {
+        isAdmin = true;
+        closeAdminModal();
+        updateRoleUI();
+        showToast("Login Berhasil! Mode Admin Kontrol Penuh Aktif.", "success");
+      } else {
+        showToast("PIN Admin Salah!", "error");
+      }
+    }
+
+    function logoutAdmin() {
+      isAdmin = false;
+      updateRoleUI();
+      showToast("Anda telah keluar dari Mode Admin.", "info");
+    }
+
+    function updateRoleUI() {
+      const dot = document.getElementById('roleDot');
+      const text = document.getElementById('roleText');
+      const btnLabel = document.getElementById('authBtnLabel');
+      const btnIcon = document.getElementById('authBtnIcon');
+
+      if (isAdmin) {
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        text.innerText = "Mode: Admin Active";
+        text.className = "text-emerald-400 font-semibold";
+        btnLabel.innerText = "Logout";
+        btnIcon.className = "fa-solid fa-unlock text-[10px] sm:text-[11px]";
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-zinc-500";
+        text.innerText = "Mode: Viewer";
+        text.className = "text-fubiz-textMuted font-medium";
+        btnLabel.innerText = "Admin Login";
+        btnIcon.className = "fa-solid fa-lock text-[10px] sm:text-[11px]";
+      }
+      renderTransactions();
+    }
+
+    function requireAdmin() {
+      if (!isAdmin) {
+        showToast("Aksi Ditolak: Membutuhkan verifikasi Admin!", "error");
+        openAdminModal();
+        return false;
+      }
+      return true;
+    }
+
+    /* MEMBER IURAN MANAGEMENT */
+    function renderMembers() {
+      const container = document.getElementById('memberCardsGrid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let totalWeeklyPaid = 0;
+
+      memberData.forEach(m => {
+        totalWeeklyPaid += (m.paid || 0);
+        const remaining = Math.max(0, TARGET_WEEKLY_PER_MEMBER - (m.paid || 0));
+        const isLunas = (m.paid || 0) >= TARGET_WEEKLY_PER_MEMBER;
+        const isPartial = (m.paid || 0) > 0 && (m.paid || 0) < TARGET_WEEKLY_PER_MEMBER;
+
+        const card = document.createElement('div');
+        card.className = `bg-fubiz-black border rounded-lg p-3.5 space-y-3 flex flex-col justify-between ${
+          isLunas ? 'border-emerald-800/80' : isPartial ? 'border-amber-800/80' : 'border-fubiz-border'
+        }`;
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <span class="text-xs font-bold text-white truncate cursor-pointer hover:underline" onclick="openEditMemberModal(${m.id})" title="Klik untuk ubah nama">${m.name}</span>
+              <button onclick="openEditMemberModal(${m.id})" class="text-[10px] text-fubiz-textMuted hover:text-white p-1" title="Ubah Nama">
+                <i class="fa-solid fa-pen text-[9px]"></i>
+              </button>
+            </div>
+
+            <div class="mb-2">
+              <span class="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold ${
+                isLunas ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
+                isPartial ? 'bg-amber-950 text-amber-400 border border-amber-800' :
+                'bg-zinc-900 text-zinc-500 border border-zinc-800'
+              }">
+                ${isLunas ? 'LUNAS' : isPartial ? 'PARSIAL / KURANG' : 'BELUM BAYAR'}
+              </span>
+            </div>
+
+            <div class="space-y-1 text-xs pt-1">
+              <div class="flex justify-between">
+                <span class="text-fubiz-textMuted text-[11px]">Terbayar:</span>
+                <span class="font-bold text-white font-mono">Rp ${formatNumber(m.paid)}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-fubiz-textMuted text-[11px]">Kekurangan:</span>
+                <span class="font-bold font-mono ${remaining > 0 ? 'text-rose-400' : 'text-zinc-500'}">Rp ${formatNumber(remaining)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-fubiz-border flex gap-1.5">
+            <button onclick="openPayMemberModal(${m.id})" class="flex-1 py-1.5 bg-fubiz-card border border-fubiz-border hover:border-white text-white text-[11px] font-semibold rounded transition-all">
+              + Bayar Manual
+            </button>
+            <button onclick="quickLunasiMember(${m.id})" class="px-2.5 py-1.5 bg-white text-black font-bold text-[11px] rounded hover:bg-zinc-200 transition-all" title="Lunasi Sisa Iuran">
+              <i class="fa-solid fa-check"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Update KPI Bar
+      document.getElementById('kpiWeeklyTotal').innerText = `Rp ${formatNumber(totalWeeklyPaid)} / ${formatNumber(TARGET_WEEKLY_PER_MEMBER * 5)}`;
+      const percentage = Math.min(100, (totalWeeklyPaid / (TARGET_WEEKLY_PER_MEMBER * 5)) * 100);
+      document.getElementById('kpiWeeklyProgressBar').style.width = `${percentage}%`;
+    }
+
+    function openPayMemberModal(memberId) {
+      if (!requireAdmin()) return;
+      selectedMemberId = memberId;
+      const member = memberData.find(m => m.id === memberId);
+      document.getElementById('payModalMemberName').innerText = `Bayar Iuran — ${member.name}`;
+      document.getElementById('payAmountInput').value = '';
+      document.getElementById('payMemberModal').classList.remove('hidden');
+    }
+
+    function closePayMemberModal() {
+      document.getElementById('payMemberModal').classList.add('hidden');
+    }
+
+    function setQuickPay(amount) {
+      document.getElementById('payAmountInput').value = amount;
+    }
+
+    async function submitMemberPayment() {
+      if (!requireAdmin()) return;
+      const amount = parseFloat(document.getElementById('payAmountInput').value);
+      const syncToKas = document.getElementById('paySyncToKas').checked;
+
+      if (isNaN(amount) || amount <= 0) {
+        showToast("Masukkan nominal pembayaran yang valid!", "error");
+        return;
+      }
+
+      const member = memberData.find(m => m.id === selectedMemberId);
+      member.paid = (member.paid || 0) + amount;
+
+      if (syncToKas) {
+        await addTransactionRecord({
+          type: 'income',
+          amount: amount,
+          category: 'Iuran Rutin',
+          description: `Iuran Rutin — ${member.name}`,
+          date: new Date().toISOString().split('T')[0]
+        });
+      }
+
+      syncDataState();
+      closePayMemberModal();
+      showToast(`Dicatat pembayaran Rp ${formatNumber(amount)} untuk ${member.name}`, "success");
+    }
+
+    async function quickLunasiMember(memberId) {
+      if (!requireAdmin()) return;
+      const member = memberData.find(m => m.id === memberId);
+      const needed = Math.max(0, TARGET_WEEKLY_PER_MEMBER - (member.paid || 0));
+
+      if (needed <= 0) {
+        showToast(`${member.name} sudah LUNAS untuk minggu ini.`, "info");
+        return;
+      }
+
+      member.paid = (member.paid || 0) + needed;
+
+      await addTransactionRecord({
+        type: 'income',
+        amount: needed,
+        category: 'Iuran Rutin',
+        description: `Pelunasan Iuran — ${member.name}`,
+        date: new Date().toISOString().split('T')[0]
+      });
+
+      syncDataState();
+      showToast(`Iuran ${member.name} dilunasi (+Rp ${formatNumber(needed)})`, "success");
+    }
+
+    function openEditMemberModal(memberId) {
+      if (!requireAdmin()) return;
+      selectedMemberId = memberId;
+      const member = memberData.find(m => m.id === memberId);
+      document.getElementById('editMemberNameInput').value = member.name;
+      document.getElementById('editMemberModal').classList.remove('hidden');
+    }
+
+    function closeEditMemberModal() {
+      document.getElementById('editMemberModal').classList.add('hidden');
+    }
+
+    function saveMemberName() {
+      if (!requireAdmin()) return;
+      const newName = document.getElementById('editMemberNameInput').value.trim();
+      if (!newName) {
+        showToast("Nama anggota tidak boleh kosong!", "error");
+        return;
+      }
+
+      const member = memberData.find(m => m.id === selectedMemberId);
+      member.name = newName;
+      syncDataState();
+      closeEditMemberModal();
+      showToast("Nama anggota berhasil diperbarui!", "success");
+    }
+
+    function confirmResetWeeklyIuran() {
+      if (!requireAdmin()) return;
+      openConfirmModal(
+        "Reset Iuran Minggu Ini",
+        "Apakah Anda yakin ingin me-reset status pembayaran seluruh anggota kembali ke Rp 0 untuk minggu baru?",
+        () => {
+          memberData.forEach(m => m.paid = 0);
+          syncDataState();
+          showToast("Iuran minggu baru telah di-reset ke Rp 0.", "info");
+        }
+      );
+    }
+
+    /* DATABASE CONFIGURATION MODAL HANDLERS */
+    function openDbSetupModal() {
+      const modal = document.getElementById('dbSetupModal');
+      const statusSpan = document.getElementById('modalDbStatus');
+      const input = document.getElementById('dbConfigInput');
+
+      if (isCloudSyncActive) {
+        statusSpan.innerText = "Terhubung (Cloud Realtime)";
+        statusSpan.className = "font-bold font-mono text-emerald-400";
+      } else {
+        statusSpan.innerText = "Offline / Local Storage";
+        statusSpan.className = "font-bold font-mono text-amber-400";
+      }
+
+      const existingConfig = localStorage.getItem('eternity_firebase_config');
+      if (existingConfig) input.value = existingConfig;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeDbSetupModal() {
+      document.getElementById('dbSetupModal').classList.add('hidden');
+    }
+
+    function saveCustomFirebaseConfig() {
+      const rawInput = document.getElementById('dbConfigInput').value.trim();
+
+      if (!rawInput) {
+        showToast("Tempelkan konfigurasi JSON Firebase terlebih dahulu!", "error");
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(rawInput);
+        if (!parsed.apiKey || !parsed.projectId) {
+          showToast("Format JSON Firebase tidak valid (wajib ada apiKey & projectId)!", "error");
+          return;
+        }
+
+        localStorage.setItem('eternity_firebase_config', JSON.stringify(parsed));
+        closeDbSetupModal();
+        showToast("Konfigurasi Firebase disimpan! Mengoperasikan ulang sync...", "success");
+        setTimeout(() => location.reload(), 1000);
+      } catch (e) {
+        showToast("Format JSON tidak valid! Pastikan tanda kutip dan koma benar.", "error");
+      }
+    }
+
+    function resetDbConfig() {
+      localStorage.removeItem('eternity_firebase_config');
+      closeDbSetupModal();
+      showToast("Kembali ke mode Local Storage.", "info");
+      setTimeout(() => location.reload(), 800);
+    }
+
+    /* GIG SPLIT CALCULATOR */
+    function calculateGigSplit() {
+      const fee = parseFloat(document.getElementById('calcGigFee').value) || 0;
+      const kasPercent = parseFloat(document.getElementById('calcKasPercent').value) || 0;
+
+      const kasAmount = (fee * kasPercent) / 100;
+      const personnelTotal = fee - kasAmount;
+      const perMember = personnelTotal / 5;
+
+      document.getElementById('calcKasAmount').innerText = `Rp ${formatNumber(kasAmount)}`;
+      document.getElementById('calcPersonnelTotal').innerText = `Rp ${formatNumber(personnelTotal)}`;
+      document.getElementById('calcPerMemberAmount').innerText = `Rp ${formatNumber(perMember)} / org`;
+    }
+
+    async function injectGigToKas() {
+      if (!requireAdmin()) return;
+
+      const fee = parseFloat(document.getElementById('calcGigFee').value) || 0;
+      const kasPercent = parseFloat(document.getElementById('calcKasPercent').value) || 0;
+      const eventName = document.getElementById('calcEventName').value.trim() || 'Gig / Event';
+
+      const kasAmount = (fee * kasPercent) / 100;
+
+      if (kasAmount <= 0) {
+        showToast("Masukkan nominal fee gig yang valid!", "error");
+        return;
+      }
+
+      await addTransactionRecord({
+        type: 'income',
+        amount: kasAmount,
+        category: 'Fee Gig',
+        description: `Alokasi Kas ${kasPercent}% — ${eventName}`,
+        date: new Date().toISOString().split('T')[0]
+      });
+
+      syncDataState();
+      showToast(`Injeksi Rp ${formatNumber(kasAmount)} dari ${eventName} ke Kas Band sukses!`, "success");
+    }
+
+    /* TRANSACTION RECORD & LEDGER MUTATIONS */
+    async function addTransactionRecord(txObj) {
+      const newTx = {
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        ...txObj
+      };
+
+      if (isCloudSyncActive && db) {
+        try {
+          const appId = typeof __app_id !== 'undefined' ? __app_id : 'eternity-treasury-app';
+          const txCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
+          await addDoc(txCollRef, newTx);
+        } catch (e) {
+          console.warn("Cloud save tx failed, storing locally:", e);
+          transactions.unshift(newTx);
+        }
+      } else {
+        transactions.unshift(newTx);
+      }
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      if (!requireAdmin()) return;
+
+      const type = document.querySelector('input[name="txType"]:checked').value;
+      const amount = parseFloat(document.getElementById('txAmount').value);
+      const category = document.getElementById('txCategory').value;
+      const description = document.getElementById('txDescription').value.trim();
+      const date = document.getElementById('txDate').value;
+
+      if (isNaN(amount) || amount <= 0) {
+        showToast("Nominal transaksi harus lebih besar dari 0!", "error");
+        return;
+      }
+
+      await addTransactionRecord({ type, amount, category, description, date });
+      document.getElementById('txForm').reset();
+      document.getElementById('txDate').valueAsDate = new Date();
+      syncDataState();
+      showToast("Transaksi berhasil dicatat!", "success");
+    }
+
+    async function deleteTx(id, docId) {
+      if (!requireAdmin()) return;
+
+      openConfirmModal(
+        "Hapus Transaksi",
+        "Apakah Anda yakin ingin menghapus transaksi ini?",
+        async () => {
+          if (isCloudSyncActive && db && docId) {
+            try {
+              const appId = typeof __app_id !== 'undefined' ? __app_id : 'eternity-treasury-app';
+              const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'transactions', docId);
+              await deleteDoc(docRef);
+            } catch (e) {
+              console.warn("Error deleting cloud doc:", e);
+            }
+          }
+          transactions = transactions.filter(t => (t.docId !== docId && t.id !== id));
+          syncDataState();
+          showToast("Transaksi berhasil dihapus.", "info");
+        }
+      );
+    }
+
+    function renderTransactions() {
+      const catFilter = document.getElementById('filterCategory').value;
+      const search = document.getElementById('searchQuery').value.toLowerCase();
+
+      const filtered = transactions.filter(t => {
+        const matchesCat = catFilter === 'ALL' || t.category === catFilter;
+        const matchesSearch = (t.description || '').toLowerCase().includes(search) || (t.category || '').toLowerCase().includes(search);
+        return matchesCat && matchesSearch;
+      });
+
+      // KPI Totals
+      let totalIncome = 0;
+      let totalExpense = 0;
+
+      transactions.forEach(t => {
+        if (t.type === 'income') totalIncome += (t.amount || 0);
+        else totalExpense += (t.amount || 0);
+      });
+
+      const netBalance = totalIncome - totalExpense;
+
+      document.getElementById('kpiBalance').innerText = `Rp ${formatNumber(netBalance)}`;
+      document.getElementById('kpiIncome').innerText = `Rp ${formatNumber(totalIncome)}`;
+      document.getElementById('kpiExpense').innerText = `Rp ${formatNumber(totalExpense)}`;
+
+      const tbody = document.getElementById('txTableBody');
+      const mobileContainer = document.getElementById('txMobileCards');
+      const emptyState = document.getElementById('emptyState');
+
+      tbody.innerHTML = '';
+      mobileContainer.innerHTML = '';
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+
+        filtered.forEach(t => {
+          const isIncome = t.type === 'income';
+
+          // Table Row
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-fubiz-card/50 transition-colors";
+          tr.innerHTML = `
+            <td class="py-3 px-3 text-fubiz-textMuted font-mono">${t.date}</td>
+            <td class="py-3 px-3 font-medium text-white">${t.category}</td>
+            <td class="py-3 px-3 text-fubiz-textMuted">${t.description}</td>
+            <td class="py-3 px-3 text-right font-semibold font-mono ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">
+              ${isIncome ? '+' : '-'} Rp ${formatNumber(t.amount)}
+            </td>
+            <td class="py-3 px-3 text-center">
+              ${isAdmin ? `
+                <button onclick="deleteTx('${t.id}', '${t.docId || ''}')" class="text-zinc-500 hover:text-rose-400 p-1 transition-colors">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              ` : '<span class="text-zinc-600">-</span>'}
+            </td>
+          `;
+          tbody.appendChild(tr);
+
+          // Mobile Card
+          const card = document.createElement('div');
+          card.className = "bg-fubiz-black border border-fubiz-border p-3.5 rounded-lg space-y-2";
+          card.innerHTML = `
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <span class="text-[10px] text-fubiz-textMuted uppercase font-mono">${t.date} • ${t.category}</span>
+                <h4 class="text-xs font-semibold text-white mt-0.5">${t.description}</h4>
+              </div>
+              <span class="text-xs font-bold font-mono shrink-0 ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">
+                ${isIncome ? '+' : '-'} Rp ${formatNumber(t.amount)}
+              </span>
+            </div>
+            ${isAdmin ? `
+              <div class="text-right pt-2 border-t border-fubiz-border">
+                <button onclick="deleteTx('${t.id}', '${t.docId || ''}')" class="text-[11px] text-rose-400 font-semibold hover:underline">Hapus Transaksi</button>
+              </div>
+            ` : ''}
+          `;
+          mobileContainer.appendChild(card);
+        });
+      }
+
+      updateChart();
+    }
+
+    /* CHART.JS RENDERER */
+    function initChart() {
+      const ctx = document.getElementById('cashflowChart').getContext('2d');
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Pemasukan', 'Pengeluaran', 'Saldo Kas'],
+          datasets: [{
+            data: [0, 0, 0],
+            backgroundColor: ['#10b981', '#f43f5e', '#ffffff'],
+            borderRadius: 6,
+            barThickness: 32
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#a1a1aa', font: { family: 'Plus Jakarta Sans', size: 11 } }
+            },
+            y: {
+              grid: { color: '#27272a' },
+              ticks: { color: '#a1a1aa', font: { family: 'Plus Jakarta Sans', size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function updateChart() {
+      if (!chartInstance) return;
+      let inc = 0, exp = 0;
+      transactions.forEach(t => {
+        if (t.type === 'income') inc += (t.amount || 0);
+        else exp += (t.amount || 0);
+      });
+      chartInstance.data.datasets[0].data = [inc, exp, inc - exp];
+      chartInstance.update();
+    }
+
+    /* CUSTOM MODAL & TOAST SYSTEM */
+    function openConfirmModal(title, message, onExecute) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMessage').innerText = message;
+      pendingConfirmAction = onExecute;
+      document.getElementById('confirmModal').classList.remove('hidden');
+
+      const btn = document.getElementById('confirmExecuteBtn');
+      btn.onclick = () => {
+        if (pendingConfirmAction) pendingConfirmAction();
+        closeConfirmModal();
+      };
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+      pendingConfirmAction = null;
+    }
+
+    function confirmResetAllData() {
+      if (!requireAdmin()) return;
+      openConfirmModal(
+        "Reset Seluruh Data",
+        "Apakah Anda yakin ingin menghapus SELURUH transaksi kas dan me-reset iuran anggota? Tindakan ini tidak dapat dibatalkan!",
+        async () => {
+          if (isCloudSyncActive && db) {
+            transactions.forEach(async (t) => {
+              if (t.docId) {
+                try {
+                  const appId = typeof __app_id !== 'undefined' ? __app_id : 'eternity-treasury-app';
+                  await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', t.docId));
+                } catch(e) {}
+              }
+            });
+          }
+          transactions = [];
+          memberData.forEach(m => m.paid = 0);
+          syncDataState();
+          showToast("Seluruh data laporan telah di-reset.", "info");
+        }
+      );
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto px-4 py-3 rounded-lg border text-xs font-semibold shadow-2xl transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2 ${
+        type === 'error' ? 'bg-rose-950 border-rose-800 text-rose-200' :
+        type === 'success' ? 'bg-emerald-950 border-emerald-800 text-emerald-200' :
+        'bg-zinc-900 border-zinc-700 text-white'
+      }`;
+      toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> ${message}`;
+      
+      const container = document.getElementById('toastContainer');
+      container.appendChild(toast);
+
+      setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function formatNumber(num) {
+      return new Intl.NumberFormat('id-ID').format(Math.round(num || 0));
+    }
+
+    function exportToCSV() {
+      if (transactions.length === 0) {
+        showToast("Tidak ada data transaksi untuk di-export!", "error");
+        return;
+      }
+
+      let csv = "ID,Tanggal,Tipe,Kategori,Keterangan,Nominal\n";
+      transactions.forEach(t => {
+        csv += `"${t.id}","${t.date}","${t.type}","${t.category}","${(t.description || '').replace(/"/g, '""')}","${t.amount}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `ETERNITY_Laporan_Kas_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ATTACH GLOBAL HANDLERS TO WINDOW OBJECT FOR HTML INLINE EVENTS
+    window.handleAuthBtnClick = handleAuthBtnClick;
+    window.openAdminModal = openAdminModal;
+    window.closeAdminModal = closeAdminModal;
+    window.verifyAdminPin = verifyAdminPin;
+    window.openDbSetupModal = openDbSetupModal;
+    window.closeDbSetupModal = closeDbSetupModal;
+    window.saveCustomFirebaseConfig = saveCustomFirebaseConfig;
+    window.resetDbConfig = resetDbConfig;
+    window.openPayMemberModal = openPayMemberModal;
+    window.closePayMemberModal = closePayMemberModal;
+    window.setQuickPay = setQuickPay;
+    window.submitMemberPayment = submitMemberPayment;
+    window.quickLunasiMember = quickLunasiMember;
+    window.openEditMemberModal = openEditMemberModal;
+    window.closeEditMemberModal = closeEditMemberModal;
+    window.saveMemberName = saveMemberName;
+    window.confirmResetWeeklyIuran = confirmResetWeeklyIuran;
+    window.calculateGigSplit = calculateGigSplit;
+    window.injectGigToKas = injectGigToKas;
+    window.handleFormSubmit = handleFormSubmit;
+    window.deleteTx = deleteTx;
+    window.renderTransactions = renderTransactions;
+    window.exportToCSV = exportToCSV;
+    window.confirmResetAllData = confirmResetAllData;
+    window.closeConfirmModal = closeConfirmModal;
+  </script>
+</body>
+</html>
